@@ -21,6 +21,7 @@ STANDARD_APIS=(
     httproutes
     grpcroutes
     referencegrants
+    grpcroutes
 )
 
 EXPERIMENTAL_APIS=(
