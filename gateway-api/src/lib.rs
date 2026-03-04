@@ -27,10 +27,9 @@ mod tests {
     use tower::ServiceBuilder;
     use uuid::Uuid;
 
+    use crate::gateways::GatewayStatusListeners;
+
     use crate::{
-        apis::standard::common::{
-            GatewayStatusListeners, ParentReference, ParentRouteStatus, RouteStatus,
-        },
         apis::standard::constants::{
             GatewayConditionReason, GatewayConditionType, ListenerConditionReason,
             ListenerConditionType, RouteConditionReason, RouteConditionType,
@@ -39,8 +38,14 @@ mod tests {
         apis::standard::gateways::{
             Gateway, GatewayListeners, GatewaySpec, GatewayStatus, GatewayStatusAddresses,
         },
-        apis::standard::grpcroutes::GrpcRouteSpec,
-        apis::standard::httproutes::HttpRouteSpec,
+        apis::standard::grpcroutes::{
+            GrpcRouteParentRefs, GrpcRouteSpec, GrpcRouteStatus, GrpcRouteStatusParents,
+            GrpcRouteStatusParentsParentRef,
+        },
+        apis::standard::httproutes::{
+            HttpRouteParentRefs, HttpRouteSpec, HttpRouteStatus, HttpRouteStatusParents,
+            HttpRouteStatusParentsParentRef,
+        },
         apis::standard::referencegrants::{
             ReferenceGrantFrom, ReferenceGrantSpec, ReferenceGrantTo,
         },
@@ -188,7 +193,7 @@ mod tests {
             metadata: ObjectMeta::default(),
             spec: HttpRouteSpec {
                 hostnames: Some(vec!["example.com".to_string()]),
-                parent_refs: Some(vec![ParentReference {
+                parent_refs: Some(vec![HttpRouteParentRefs {
                     group: Some("gateway.networking.k8s.io".to_string()),
                     kind: Some("Gateway".to_string()),
                     namespace: Some("default".to_string()),
@@ -210,9 +215,9 @@ mod tests {
         assert!(http_route.spec.hostnames.is_some());
         assert!(http_route.spec.parent_refs.is_some());
 
-        let http_route_status = RouteStatus {
-            parents: vec![ParentRouteStatus {
-                parent_ref: ParentReference {
+        let http_route_status = HttpRouteStatus {
+            parents: vec![HttpRouteStatusParents {
+                parent_ref: HttpRouteStatusParentsParentRef {
                     group: Some("gateway.networking.k8s.io".to_string()),
                     kind: Some("Gateway".to_string()),
                     namespace: Some("default".to_string()),
@@ -249,7 +254,7 @@ mod tests {
             metadata: ObjectMeta::default(),
             spec: GrpcRouteSpec {
                 hostnames: Some(vec!["grpc.example.com".to_string()]),
-                parent_refs: Some(vec![ParentReference {
+                parent_refs: Some(vec![GrpcRouteParentRefs {
                     group: Some("gateway.networking.k8s.io".to_string()),
                     kind: Some("Gateway".to_string()),
                     namespace: Some("default".to_string()),
@@ -271,9 +276,9 @@ mod tests {
         assert!(grpc_route.spec.hostnames.is_some());
         assert!(grpc_route.spec.parent_refs.is_some());
 
-        let grpc_route_status = RouteStatus {
-            parents: vec![ParentRouteStatus {
-                parent_ref: ParentReference {
+        let grpc_route_status = GrpcRouteStatus {
+            parents: vec![GrpcRouteStatusParents {
+                parent_ref: GrpcRouteStatusParentsParentRef {
                     group: Some("gateway.networking.k8s.io".to_string()),
                     kind: Some("Gateway".to_string()),
                     namespace: Some("default".to_string()),

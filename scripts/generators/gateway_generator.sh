@@ -1,0 +1,191 @@
+#!/bin/bash
+
+# ------------------------------------------------------------------------------
+# This script will automatically generate API updates for new Gateway API
+# releases. Update the $GATEWAY_API_VERSION to the new release version before
+# executing.
+#
+# This script requires kopium, which can be installed with:
+#
+#   cargo install kopium
+#
+# See: https://github.com/kube-rs/kopium
+# ------------------------------------------------------------------------------
+
+set -eou pipefail
+
+GATEWAY_API_VERSION="v1.5.0"
+REQUIRED_KOPIUM_VERSION="0.22.5"
+KOPIUM_VERSION=$(kopium --version 2>/dev/null | grep -oP 'kopium \K[0-9]+\.[0-9]+\.[0-9]+' || echo "")
+
+if [ -z "$KOPIUM_VERSION" ]; then
+    echo "Error: kopium is not installed or not in PATH"
+    echo "Please install kopium version ${REQUIRED_KOPIUM_VERSION} with:"
+    echo "  cargo install kopium --version ${REQUIRED_KOPIUM_VERSION}"
+    exit 1
+fi
+
+if [ "$KOPIUM_VERSION" != "$REQUIRED_KOPIUM_VERSION" ]; then
+    echo "Error: kopium version mismatch"
+    echo "  Required: ${REQUIRED_KOPIUM_VERSION}"
+    echo "  Found: ${KOPIUM_VERSION}"
+    echo "Please install the correct version with:"
+    echo "  cargo install kopium --version ${REQUIRED_KOPIUM_VERSION}"
+    exit 1
+fi
+
+echo "Using kopium version ${KOPIUM_VERSION}"
+echo "Using Gateway API version ${GATEWAY_API_VERSION}"
+
+STANDARD_APIS=(
+    gatewayclasses
+    gateways
+    httproutes
+    referencegrants
+    grpcroutes
+    backendtlspolicies
+    listenersets
+    tlsroutes
+)
+
+EXPERIMENTAL_APIS=(
+    gatewayclasses
+    gateways
+    httproutes
+    referencegrants
+    grpcroutes
+    tcproutes
+    tlsroutes
+    udproutes
+    backendtlspolicies
+    listenersets
+)
+
+export APIS_DIR='gateway-api/src/apis'
+rm -rf $APIS_DIR/standard/
+rm -rf $APIS_DIR/experimental/
+
+cat << EOF > $APIS_DIR/mod.rs
+pub mod experimental;
+pub mod standard;
+EOF
+
+
+mkdir -p $APIS_DIR/standard/
+mkdir -p $APIS_DIR/experimental/
+
+
+echo "// WARNING! generated file do not edit" > $APIS_DIR/standard/mod.rs
+
+for API in "${STANDARD_APIS[@]}"
+do
+    echo "generating standard api ${API}"
+    curl -sSL "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/${GATEWAY_API_VERSION}/config/crd/standard/gateway.networking.k8s.io_${API}.yaml" | kopium --schema=derived --derive=JsonSchema --derive=Default --derive=PartialEq --docs -f - > $APIS_DIR/standard/${API}.rs
+    sed -i 's/pub use kube::CustomResource;/pub use kube_derive::CustomResource;/g' $APIS_DIR/standard/${API}.rs
+    echo "pub mod ${API};" >> $APIS_DIR/standard/mod.rs
+done
+
+# Standard API enums that need a Default trait impl along with their respective default variant.
+ENUMS=(
+    HttpRouteRulesFiltersRequestRedirectPathType=ReplaceFullPath
+    HttpRouteRulesFiltersUrlRewritePathType=ReplaceFullPath
+    HttpRouteRulesFiltersType=RequestHeaderModifier
+    HttpRouteRulesBackendRefsFiltersRequestRedirectPathType=ReplaceFullPath
+    HttpRouteRulesBackendRefsFiltersUrlRewritePathType=ReplaceFullPath
+    HttpRouteRulesBackendRefsFiltersType=RequestHeaderModifier
+    GrpcRouteRulesFiltersType=RequestHeaderModifier
+    GrpcRouteRulesBackendRefsFiltersType=RequestHeaderModifier
+    BackendTlsPolicyValidationSubjectAltNamesType=Hostname
+)
+
+# Create a comma separated string out of $ENUMS.
+ENUMS_WITH_DEFAULTS=$(printf ",%s" "${ENUMS[@]}")
+ENUMS_WITH_DEFAULTS=${ENUMS_WITH_DEFAULTS:1}
+
+# The task searches for $GATEWAY_API_ENUMS in the environment to get the enum names and their default variants.
+GATEWAY_API_ENUMS=${ENUMS_WITH_DEFAULTS} cargo xtask gen_enum_defaults >> $APIS_DIR/standard/enum_defaults.rs
+echo "mod enum_defaults;" >> $APIS_DIR/standard/mod.rs
+
+
+GATEWAY_CLASS_CONDITION_CONSTANTS="GatewayClassConditionType=Accepted"
+GATEWAY_CLASS_REASON_CONSTANTS="GatewayClassConditionReason=Accepted,InvalidParameters,Pending,Unsupported,Waiting"
+GATEWAY_CONDITION_CONSTANTS="GatewayConditionType=Programmed,Accepted,Ready"
+GATEWAY_REASON_CONSTANTS="GatewayConditionReason=Programmed,Invalid,NoResources,AddressNotAssigned,AddressNotUsable,Accepted,ListenersNotValid,Pending,UnsupportedAddress,InvalidParameters,Ready,ListenersNotReady"
+LISTENER_CONDITION_CONSTANTS="ListenerConditionType=Conflicted,Accepted,ResolvedRefs,Programmed,Ready"
+LISTENER_REASON_CONSTANTS="ListenerConditionReason=HostnameConflict,ProtocolConflict,NoConflicts,Accepted,PortUnavailable,UnsupportedProtocol,ResolvedRefs,InvalidCertificateRef,InvalidRouteKinds,RefNotPermitted,Programmed,Invalid,Pending,Ready"
+ROUTE_CONDITION_CONSTANTS="RouteConditionType=Accepted,ResolvedRefs,PartiallyInvalid"
+ROUTE_REASON_CONSTANTS="RouteConditionReason=Accepted,NotAllowedByListeners,NoMatchingListenerHostname,NoMatchingParent,UnsupportedValue,Pending,IncompatibleFilters,ResolvedRefs,RefNotPermitted,InvalidKind,BackendNotFound,UnsupportedProtocol"
+
+GATEWAY_CLASS_CONDITION_CONSTANTS=${GATEWAY_CLASS_CONDITION_CONSTANTS} GATEWAY_CLASS_REASON_CONSTANTS=${GATEWAY_CLASS_REASON_CONSTANTS} \
+    GATEWAY_CONDITION_CONSTANTS=${GATEWAY_CONDITION_CONSTANTS} GATEWAY_REASON_CONSTANTS=${GATEWAY_REASON_CONSTANTS} \
+    LISTENER_CONDITION_CONSTANTS=${LISTENER_CONDITION_CONSTANTS} LISTENER_REASON_CONSTANTS=${LISTENER_REASON_CONSTANTS} \
+    ROUTE_CONDITION_CONSTANTS=${ROUTE_CONDITION_CONSTANTS} ROUTE_REASON_CONSTANTS=${ROUTE_REASON_CONSTANTS} \
+    cargo xtask gen_condition_constants >> $APIS_DIR/standard/constants.rs
+echo "pub mod constants;" >> $APIS_DIR/standard/mod.rs
+
+echo "// WARNING! generated file do not edit" > $APIS_DIR/experimental/mod.rs
+
+for API in "${EXPERIMENTAL_APIS[@]}"
+do
+    echo "generating experimental api $API"
+    curl -sSL "https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/${GATEWAY_API_VERSION}/config/crd/experimental/gateway.networking.k8s.io_${API}.yaml" | kopium --schema=derived --derive=JsonSchema --derive=Default --derive=PartialEq --docs -f - > $APIS_DIR/experimental/${API}.rs
+    sed -i 's/pub use kube::CustomResource;/pub use kube_derive::CustomResource;/g' $APIS_DIR/experimental/${API}.rs
+    echo "pub mod ${API};" >> $APIS_DIR/experimental/mod.rs
+done
+
+# Experimental API enums that need a Default trait impl along with their respective default variant.
+ENUMS=(
+    HttpRouteRulesFiltersRequestRedirectPathType=ReplaceFullPath
+    HttpRouteRulesFiltersUrlRewritePathType=ReplaceFullPath
+    HttpRouteRulesFiltersType=RequestHeaderModifier
+    HttpRouteRulesBackendRefsFiltersRequestRedirectPathType=ReplaceFullPath
+    HttpRouteRulesBackendRefsFiltersUrlRewritePathType=ReplaceFullPath
+    HttpRouteRulesBackendRefsFiltersType=RequestHeaderModifier
+    HttpRouteRulesBackendRefsFiltersExternalAuthProtocol=Http
+    GrpcRouteRulesFiltersType=RequestHeaderModifier
+    GrpcRouteRulesBackendRefsFiltersType=RequestHeaderModifier
+    BackendTlsPolicyValidationSubjectAltNamesType=Hostname
+    HttpRouteRulesFiltersExternalAuthProtocol=Http
+    
+)
+
+ENUMS_WITH_DEFAULTS=$(printf ",%s" "${ENUMS[@]}")
+ENUMS_WITH_DEFAULTS=${ENUMS_WITH_DEFAULTS:1}
+GATEWAY_API_ENUMS=${ENUMS_WITH_DEFAULTS} cargo xtask gen_enum_defaults >> $APIS_DIR/experimental/enum_defaults.rs
+echo "mod enum_defaults;" >> $APIS_DIR/experimental/mod.rs
+
+# GatewayClass conditions vary between standard and experimental
+GATEWAY_CLASS_CONDITION_CONSTANTS="${GATEWAY_CLASS_CONDITION_CONSTANTS},SupportedVersion"
+GATEWAY_CLASS_REASON_CONSTANTS="${GATEWAY_CLASS_REASON_CONSTANTS},SupportedVersion,UnsupportedVersion"
+ROUTE_CONDITION_CONSTANTS="RouteConditionType=Accepted,ResolvedRefs"
+ROUTE_REASON_CONSTANTS="RouteConditionReason=Accepted,NotAllowedByListeners,NoMatchingListenerHostname,UnsupportedValue,Pending,ResolvedRefs,RefNotPermitted,InvalidKind,BackendNotFound"
+
+GATEWAY_CLASS_CONDITION_CONSTANTS=${GATEWAY_CLASS_CONDITION_CONSTANTS} GATEWAY_CLASS_REASON_CONSTANTS=${GATEWAY_CLASS_REASON_CONSTANTS} \
+    GATEWAY_CONDITION_CONSTANTS=${GATEWAY_CONDITION_CONSTANTS} GATEWAY_REASON_CONSTANTS=${GATEWAY_REASON_CONSTANTS} \
+    LISTENER_CONDITION_CONSTANTS=${LISTENER_CONDITION_CONSTANTS} LISTENER_REASON_CONSTANTS=${LISTENER_REASON_CONSTANTS} \
+    ROUTE_CONDITION_CONSTANTS=${ROUTE_CONDITION_CONSTANTS} ROUTE_REASON_CONSTANTS=${ROUTE_REASON_CONSTANTS} \
+    cargo xtask gen_condition_constants >> $APIS_DIR/experimental/constants.rs
+echo "pub mod constants;" >> $APIS_DIR/experimental/mod.rs
+
+# Format the code.
+echo "use crate::backendtlspolicies::BackendTlsPolicyValidationSubjectAltNamesType;" >> $APIS_DIR/standard/enum_defaults.rs
+cargo fmt
+
+
+
+
+
+
+ENUMS=(
+    GRPCFilterType=RequestHeaderModifier
+    RequestOperationType=ReplaceFullPath
+    HttpRouteRulesBackendRefsFiltersExternalAuthProtocol=Http
+    HTTPFilterType=RequestHeaderModifier
+    BackendTlsPolicyValidationSubjectAltNamesType=Hostname
+)
+
+echo "use crate::experimental::backendtlspolicies::BackendTlsPolicyValidationSubjectAltNamesType;" >> $APIS_DIR/experimental/enum_defaults.rs
+
+cargo fmt
+echo "Gateway API Generation complete"
+

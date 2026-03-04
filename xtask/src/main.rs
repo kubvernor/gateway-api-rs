@@ -116,8 +116,26 @@ fn gen_enum_defaults() -> Result<(), DynError> {
     }
 
     // Print the common use statement first
-    println!("use super::common::*;");
+    //println!("use super::common::*;");
+
     println!("{}", gen_generated_file_warning());
+
+    //
+    println!(
+        r#"#[allow(unused_imports)]
+    pub mod prelude {{
+        pub use super::super::backendtlspolicies::*;
+        pub use super::super::gatewayclasses::*;
+        pub use super::super::gateways::*;
+        pub use super::super::grpcroutes::*;
+        pub use super::super::httproutes::*;
+        pub use super::super::listenersets::*;
+        pub use super::super::referencegrants::*;
+        pub use super::super::tlsroutes::*;
+    }}
+    use prelude::*;
+   "#
+    );
 
     println!("{}", scope.to_string());
     Ok(())
