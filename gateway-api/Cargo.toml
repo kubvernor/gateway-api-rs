@@ -6,7 +6,7 @@ keywords = ["kubernetes", "gateway-api"]
 
 homepage = "https://docs.rs/crate/gateway-api/"
 readme = "../README.md"
-repository = "https://github.com/kube-rs/gateway-api-rs"
+repository = "https://github.com/kubvernor/gateway-api-rs"
 
 authors.workspace = true
 edition.workspace = true
@@ -25,24 +25,24 @@ schemars.workspace = true
 serde_json.workspace = true
 serde.workspace = true
 serde_yaml.workspace = true
+cfg-if.workspace = true
 
-[dev-dependencies]
-k8s-openapi = { workspace = true, features = ["v1_33", "schemars"] }
-kube = { workspace = true, features = ["client", "rustls-tls", "ring"] }
+# [dev-dependencies]
+# k8s-openapi = { workspace = true, features = ["v1_33", "schemars"] }
+# kube = { workspace = true, features = ["client", "rustls-tls", "ring"] }
 
-anyhow.workspace = true
-hyper-util.workspace = true
-tokio.workspace = true
-tower.workspace = true
-uuid.workspace = true
+# anyhow.workspace = true
+# hyper-util.workspace = true
+# tokio.workspace = true
+# tower.workspace = true
+# uuid.workspace = true
 
-[package.metadata.docs.rs]
-features = ["k8s-openapi/v1_33"]
 
 [features]
-default = ["standard", "experimental"]
+default = ["standard"]
 standard = []
-experimental = []
+experimental=[]
+
 
 
 [lints.clippy]

@@ -1,18 +1,27 @@
 Condition
-GRPCFilterType
+AllowedRoutesNamespacesFrom
+BackendObjectReference
+Condition
+ExtensionParametersReference
+FilterExtensionReference
+FiltersType
 GatewayAddress
 GatewayInfrastructureParametersReference
-Kind
-ParentReference
-FilterExtensionReference
+GatewayParametersRef
+GRPCFilterType
+HeaderMatchType
+HTTPFilterType
 HTTPHeader
-BackendObjectReference
+Kind
+MatchExpressions
+ParentReference
+RedirectStatusCode
+Reference
 RequestMirrorFraction
 RequestOperationType
 RequestRedirectScheme
-RedirectStatusCode
-FiltersType
-HeaderMatchType
+TlsMode
+TlsValidationMode
 #### Pass 2
 MatchingHeaders
 HeaderModifier
@@ -20,9 +29,15 @@ HeaderMatch
 RequestMirror
 RequestRedirectPath
 ParentRouteStatus
+NamespaceSelector
+ListenerStatus
+ListenerTls
 #### Pass 3
 GrpcRouteFilter
 HttpRouteRequestRedirect
 HttpRouteUrlRewrite
 RouteStatus
+FilterRequestRedirect
+AllowedRoutesNamespaces
+
 

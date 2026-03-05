@@ -1,0 +1,13 @@
+AllowedRoutesNamespacesFrom=Same
+BackendTlsPolicyValidationSubjectAltNamesType=Hostname
+GatewayAllowedListenersNamespacesFrom=Same
+GRPCFilterType=RequestHeaderModifier
+HeaderMatchType=Exact
+HTTPFilterType=RequestHeaderModifier
+HTTPMethodMatch=Get
+HttpRouteRulesMatchesPathType=Exact
+RedirectStatusCode=r#_301
+RequestOperationType=ReplaceFullPath
+RequestRedirectScheme=Https
+TlsMode=Terminate
+TlsValidationMode=AllowValidOnly

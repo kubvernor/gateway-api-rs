@@ -12,6 +12,8 @@
 # See: https://github.com/kube-rs/kopium
 # ------------------------------------------------------------------------------
 
+echo "GENERATING GATEWAY API ONLY"
+
 set -eou pipefail
 
 GATEWAY_API_VERSION="v1.5.0"
@@ -61,10 +63,6 @@ EXPERIMENTAL_APIS=(
     listenersets
 )
 
-export APIS_DIR='gateway-api/src/apis'
-rm -rf $APIS_DIR/standard/
-rm -rf $APIS_DIR/experimental/
-
 cat << EOF > $APIS_DIR/mod.rs
 pub mod experimental;
 pub mod standard;
@@ -85,26 +83,26 @@ do
     echo "pub mod ${API};" >> $APIS_DIR/standard/mod.rs
 done
 
-# Standard API enums that need a Default trait impl along with their respective default variant.
-ENUMS=(
-    HttpRouteRulesFiltersRequestRedirectPathType=ReplaceFullPath
-    HttpRouteRulesFiltersUrlRewritePathType=ReplaceFullPath
-    HttpRouteRulesFiltersType=RequestHeaderModifier
-    HttpRouteRulesBackendRefsFiltersRequestRedirectPathType=ReplaceFullPath
-    HttpRouteRulesBackendRefsFiltersUrlRewritePathType=ReplaceFullPath
-    HttpRouteRulesBackendRefsFiltersType=RequestHeaderModifier
-    GrpcRouteRulesFiltersType=RequestHeaderModifier
-    GrpcRouteRulesBackendRefsFiltersType=RequestHeaderModifier
-    BackendTlsPolicyValidationSubjectAltNamesType=Hostname
-)
+# # Standard API enums that need a Default trait impl along with their respective default variant.
+# ENUMS=(
+#     HttpRouteRulesFiltersRequestRedirectPathType=ReplaceFullPath
+#     HttpRouteRulesFiltersUrlRewritePathType=ReplaceFullPath
+#     HttpRouteRulesFiltersType=RequestHeaderModifier
+#     HttpRouteRulesBackendRefsFiltersRequestRedirectPathType=ReplaceFullPath
+#     HttpRouteRulesBackendRefsFiltersUrlRewritePathType=ReplaceFullPath
+#     HttpRouteRulesBackendRefsFiltersType=RequestHeaderModifier
+#     GrpcRouteRulesFiltersType=RequestHeaderModifier
+#     GrpcRouteRulesBackendRefsFiltersType=RequestHeaderModifier
+#     BackendTlsPolicyValidationSubjectAltNamesType=Hostname
+# )
 
-# Create a comma separated string out of $ENUMS.
-ENUMS_WITH_DEFAULTS=$(printf ",%s" "${ENUMS[@]}")
-ENUMS_WITH_DEFAULTS=${ENUMS_WITH_DEFAULTS:1}
+# # Create a comma separated string out of $ENUMS.
+# ENUMS_WITH_DEFAULTS=$(printf ",%s" "${ENUMS[@]}")
+# ENUMS_WITH_DEFAULTS=${ENUMS_WITH_DEFAULTS:1}
 
-# The task searches for $GATEWAY_API_ENUMS in the environment to get the enum names and their default variants.
-GATEWAY_API_ENUMS=${ENUMS_WITH_DEFAULTS} cargo xtask gen_enum_defaults >> $APIS_DIR/standard/enum_defaults.rs
-echo "mod enum_defaults;" >> $APIS_DIR/standard/mod.rs
+# # The task searches for $GATEWAY_API_ENUMS in the environment to get the enum names and their default variants.
+# GATEWAY_API_ENUMS=${ENUMS_WITH_DEFAULTS} cargo xtask gen_enum_defaults >> $APIS_DIR/standard/enum_defaults.rs
+# echo "mod enum_defaults;" >> $APIS_DIR/standard/mod.rs
 
 
 GATEWAY_CLASS_CONDITION_CONSTANTS="GatewayClassConditionType=Accepted"
@@ -133,26 +131,26 @@ do
     echo "pub mod ${API};" >> $APIS_DIR/experimental/mod.rs
 done
 
-# Experimental API enums that need a Default trait impl along with their respective default variant.
-ENUMS=(
-    HttpRouteRulesFiltersRequestRedirectPathType=ReplaceFullPath
-    HttpRouteRulesFiltersUrlRewritePathType=ReplaceFullPath
-    HttpRouteRulesFiltersType=RequestHeaderModifier
-    HttpRouteRulesBackendRefsFiltersRequestRedirectPathType=ReplaceFullPath
-    HttpRouteRulesBackendRefsFiltersUrlRewritePathType=ReplaceFullPath
-    HttpRouteRulesBackendRefsFiltersType=RequestHeaderModifier
-    HttpRouteRulesBackendRefsFiltersExternalAuthProtocol=Http
-    GrpcRouteRulesFiltersType=RequestHeaderModifier
-    GrpcRouteRulesBackendRefsFiltersType=RequestHeaderModifier
-    BackendTlsPolicyValidationSubjectAltNamesType=Hostname
-    HttpRouteRulesFiltersExternalAuthProtocol=Http
+# # Experimental API enums that need a Default trait impl along with their respective default variant.
+# ENUMS=(
+#     HttpRouteRulesFiltersRequestRedirectPathType=ReplaceFullPath
+#     HttpRouteRulesFiltersUrlRewritePathType=ReplaceFullPath
+#     HttpRouteRulesFiltersType=RequestHeaderModifier
+#     HttpRouteRulesBackendRefsFiltersRequestRedirectPathType=ReplaceFullPath
+#     HttpRouteRulesBackendRefsFiltersUrlRewritePathType=ReplaceFullPath
+#     HttpRouteRulesBackendRefsFiltersType=RequestHeaderModifier
+#     HttpRouteRulesBackendRefsFiltersExternalAuthProtocol=Http
+#     GrpcRouteRulesFiltersType=RequestHeaderModifier
+#     GrpcRouteRulesBackendRefsFiltersType=RequestHeaderModifier
+#     BackendTlsPolicyValidationSubjectAltNamesType=Hostname
+#     HttpRouteRulesFiltersExternalAuthProtocol=Http
     
-)
+# )
 
-ENUMS_WITH_DEFAULTS=$(printf ",%s" "${ENUMS[@]}")
-ENUMS_WITH_DEFAULTS=${ENUMS_WITH_DEFAULTS:1}
-GATEWAY_API_ENUMS=${ENUMS_WITH_DEFAULTS} cargo xtask gen_enum_defaults >> $APIS_DIR/experimental/enum_defaults.rs
-echo "mod enum_defaults;" >> $APIS_DIR/experimental/mod.rs
+# ENUMS_WITH_DEFAULTS=$(printf ",%s" "${ENUMS[@]}")
+# ENUMS_WITH_DEFAULTS=${ENUMS_WITH_DEFAULTS:1}
+# GATEWAY_API_ENUMS=${ENUMS_WITH_DEFAULTS} cargo xtask gen_enum_defaults >> $APIS_DIR/experimental/enum_defaults.rs
+# echo "mod enum_defaults;" >> $APIS_DIR/experimental/mod.rs
 
 # GatewayClass conditions vary between standard and experimental
 GATEWAY_CLASS_CONDITION_CONSTANTS="${GATEWAY_CLASS_CONDITION_CONSTANTS},SupportedVersion"
@@ -172,20 +170,5 @@ echo "use crate::backendtlspolicies::BackendTlsPolicyValidationSubjectAltNamesTy
 cargo fmt
 
 
-
-
-
-
-ENUMS=(
-    GRPCFilterType=RequestHeaderModifier
-    RequestOperationType=ReplaceFullPath
-    HttpRouteRulesBackendRefsFiltersExternalAuthProtocol=Http
-    HTTPFilterType=RequestHeaderModifier
-    BackendTlsPolicyValidationSubjectAltNamesType=Hostname
-)
-
-echo "use crate::experimental::backendtlspolicies::BackendTlsPolicyValidationSubjectAltNamesType;" >> $APIS_DIR/experimental/enum_defaults.rs
-
-cargo fmt
-echo "Gateway API Generation complete"
+echo "GENERATING GATEWAY API ONLY Done"
 

@@ -1,4 +1,4 @@
-AllowedRoutesNamespaces
+AllowedRoutesNamespacesFrom
 BackendObjectReference
 Condition
 ExtensionParametersReference
@@ -28,3 +28,6 @@ HeaderMatch
 RequestMirror
 RequestRedirectPath
 ParentRouteStatus
+NamespaceSelector
+ListenerStatus
+ListenerTls

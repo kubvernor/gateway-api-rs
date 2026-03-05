@@ -1,0 +1,2 @@
+InferencePoolExtensionRefFailureMode=FailOpen
+InferenceModelRewriteRulesMatchesModelType=Exact

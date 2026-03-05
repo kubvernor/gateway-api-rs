@@ -1,0 +1,1 @@
+awk -F'->' '{print $2}' type-reducer/standard_customized_mapped_names.txt | sort -u

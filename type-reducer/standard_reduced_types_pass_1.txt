@@ -1,4 +1,4 @@
-AllowedRoutesNamespaces
+AllowedRoutesNamespacesFrom
 BackendObjectReference
 Condition
 ExtensionParametersReference
