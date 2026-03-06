@@ -4,10 +4,10 @@ members = ["gateway-api", "gateway-api-with-extensions", "gateway-api-inference-
 resolver = "2"
 
 [workspace.package]
-authors = ["kube-rs project (https://kube.rs)"]
+authors = ["kube-rs and kubvernor project (https://kube.rs)"]
 edition = "2024"
 license = "MIT"
-version = "0.21.0+gw150-ie140"
+version = "0.22.0+gw150-ie140"
 description ="Rust APIs for Gateway API 1.5.0 and Gateway API Inference Extension 1.4.0"
 
 [workspace.dependencies]

@@ -37,17 +37,12 @@ Gateway API and Extensions. Make sure you install `kopium` locally in order to r
 $ cargo install kopium --version 0.22.5
 ```
 
-After which you can run the generator scripts for gateway api or extensions placed under `scripts/generators` folder:
 
-### Gateway API Generator Script
+### Generate APIs
 ```console
-$ ./scripts/generators/gateway.sh
+$ ./scripts/generators/gateway_all.sh
 ```
 
-### Gateway Inference Extension Generator Script
-```console
-$ ./scripts/generators/extensions/inference.sh
-```
 
 Check for errors and/or a non-zero exit code, but upon success you should see
 updates automatically generated for code in the `gateway-api/src/api` directory

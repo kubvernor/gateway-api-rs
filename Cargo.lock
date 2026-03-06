@@ -346,7 +346,7 @@ checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
 
 [[package]]
 name = "enum_default_generator"
-version = "0.21.0+gw150-ie140"
+version = "0.22.0+gw150-ie140"
 dependencies = [
  "codegen",
 ]
@@ -454,7 +454,7 @@ dependencies = [
 
 [[package]]
 name = "gateway-api"
-version = "0.21.0+gw150-ie140"
+version = "0.150.0"
 dependencies = [
  "cfg-if",
  "delegate",
@@ -472,7 +472,7 @@ dependencies = [
 
 [[package]]
 name = "gateway-api-examples"
-version = "0.21.0+gw150-ie140"
+version = "0.22.0+gw150-ie140"
 dependencies = [
  "anyhow",
  "gateway-api",
@@ -488,7 +488,7 @@ dependencies = [
 
 [[package]]
 name = "gateway-api-inference-extension"
-version = "0.21.0+gw150-ie140"
+version = "0.130.0"
 dependencies = [
  "cfg-if",
  "delegate",
@@ -506,7 +506,7 @@ dependencies = [
 
 [[package]]
 name = "gateway-api-with-extensions"
-version = "0.21.0+gw150-ie140"
+version = "0.150.0+130"
 dependencies = [
  "anyhow",
  "cfg-if",
@@ -1814,7 +1814,7 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "type-reducer"
-version = "0.21.0+gw150-ie140"
+version = "0.22.0+gw150-ie140"
 dependencies = [
  "clap",
  "itertools",

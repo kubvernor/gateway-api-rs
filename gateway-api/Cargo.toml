@@ -7,11 +7,12 @@ keywords = ["kubernetes", "gateway-api"]
 homepage = "https://docs.rs/crate/gateway-api/"
 readme = "../README.md"
 repository = "https://github.com/kubvernor/gateway-api-rs"
+version = "0.150.0"
 
 authors.workspace = true
 edition.workspace = true
 license.workspace = true
-version.workspace = true
+
 
 [dependencies]
 delegate.workspace = true
