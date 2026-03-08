@@ -18,8 +18,8 @@ GatewayListenersAllowedRoutesKinds->Kind
 GatewayStatusListenersSupportedKinds->Kind
 ListenerSetListenersAllowedRoutesKinds->Kind
 ListenerSetStatusListenersSupportedKinds->Kind
-GatewayListenersAllowedRoutesNamespacesFrom->AllowedRoutesNamespaces
-ListenerSetListenersAllowedRoutesNamespacesFrom->AllowedRoutesNamespaces
+GatewayListenersAllowedRoutesNamespacesFrom->AllowedRoutesNamespacesFrom
+ListenerSetListenersAllowedRoutesNamespacesFrom->AllowedRoutesNamespacesFrom
 GatewayListenersTlsCertificateRefs->Reference
 GatewayTlsBackendClientCertificateRef->Reference
 ListenerSetListenersTlsCertificateRefs->Reference
@@ -95,6 +95,14 @@ HttpRouteRulesBackendRefsFiltersRequestRedirectPath->RequestRedirectPath
 HttpRouteRulesBackendRefsFiltersUrlRewritePath->RequestRedirectPath
 HttpRouteRulesFiltersRequestRedirectPath->RequestRedirectPath
 HttpRouteRulesFiltersUrlRewritePath->RequestRedirectPath
+GatewayAllowedListenersNamespacesSelector->NamespaceSelector
+GatewayListenersAllowedRoutesNamespacesSelector->NamespaceSelector
+ListenerSetListenersAllowedRoutesNamespacesSelector->NamespaceSelector
+GatewayStatusListeners->ListenerStatus
+ListenerSetStatusListeners->ListenerStatus
+GatewayListenersTls->ListenerTls
+ListenerSetListenersTls->ListenerTls
+
 #### Pass 3
 GrpcRouteRulesBackendRefsFilters->GrpcRouteFilter
 GrpcRouteRulesFilters->GrpcRouteFilter
@@ -105,3 +113,15 @@ HttpRouteRulesFiltersUrlRewrite->HttpRouteUrlRewrite
 GrpcRouteStatus->RouteStatus
 HttpRouteStatus->RouteStatus
 TlsRouteStatus->RouteStatus
+HttpRouteRulesBackendRefsFiltersRequestRedirect->FilterRequestRedirect
+HttpRouteRulesFiltersRequestRedirect->FilterRequestRedirect
+GatewayListenersAllowedRoutesNamespaces->AllowedRoutesNamespaces
+ListenerSetListenersAllowedRoutesNamespaces->AllowedRoutesNamespaces
+
+#### Pass 4
+GatewayListenersAllowedRoutes->AllowedRoutes
+ListenerSetListenersAllowedRoutes->AllowedRoutes
+
+#### Pass 5
+GatewayListeners->Listeners
+ListenerSetListeners->Listeners

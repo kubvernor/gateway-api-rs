@@ -1,0 +1,48 @@
+AllowedRoutesNamespacesFrom
+BackendObjectReference
+CookieConfigLifetimeType
+DefaultGateway
+ExtensionParametersReference
+ExternalAuthGrpc
+ExternalAuthHttp
+ForwardBody
+GatewayAddress
+GatewayParametersRef
+GRPCFilterType
+HeaderMatchType
+HTTPFilterType
+HTTPHeader
+Kind
+MatchExpressions
+ParentReference
+RedirectStatusCode
+Reference
+RequestMirrorFraction
+RequestOperationType
+RequestRedirectScheme
+TlsMode
+TlsValidationMode
+#### Pass 2
+MatchingHeaders
+HeaderModifier
+HeaderMatch
+RequestMirror
+RequestRedirectPath
+NamespaceSelector
+ListenerStatus
+ListenerTls
+ParentRouteStatus
+#### Pass 3
+GrpcRouteFilter
+HttpRouteRequestRedirect
+HttpRouteUrlRewrite
+RouteStatus
+FilterRequestRedirect
+AllowedRoutesNamespaces
+
+
+#### Pass 4
+AllowedRoutes
+
+#### Pass 5
+Listeners

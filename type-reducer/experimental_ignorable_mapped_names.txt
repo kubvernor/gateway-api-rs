@@ -2,3 +2,5 @@ TcpRouteSpec->RouteSpec
 UdpRouteSpec->RouteSpec
 GrpcRouteRulesFilters->GrpcRouteFilter
 GrpcRouteRulesBackendRefsFilters->GrpcRouteFilter
+GatewayClassStatusSupportedFeatures->GatewayClassStatusSupportedFeatures
+InferencePoolImportStatusControllersExportingClusters->InferencePoolImportStatusControllersExportingClusters

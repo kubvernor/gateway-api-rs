@@ -271,20 +271,21 @@ fn create_visitors<'a>(
     entries.sort_by_key(|e| e.path());
 
     for dir_entry in entries {
-        if let Ok(name) = dir_entry.file_name().into_string() {
-            if name.ends_with(".rs") && name != "mod.rs" {
-                info!("Adding file {:?}", dir_entry.path());
-                if let Ok(api_file) = fs::read_to_string(dir_entry.path()) {
-                    if let Ok(syntaxt_file) = syn::parse_file(&api_file) {
-                        let visitor = StructEnumVisitor {
-                            name,
-                            structs: Vec::new(),
-                            enums: Vec::new(),
-                            derived_type_names: previous_pass_derived_type_names,
-                        };
-                        visitors.push((visitor, syntaxt_file));
-                    }
-                }
+        if let Ok(name) = dir_entry.file_name().into_string()
+            && name.ends_with(".rs")
+            && name != "mod.rs"
+        {
+            info!("Adding file {:?}", dir_entry.path());
+            if let Ok(api_file) = fs::read_to_string(dir_entry.path())
+                && let Ok(syntaxt_file) = syn::parse_file(&api_file)
+            {
+                let visitor = StructEnumVisitor {
+                    name,
+                    structs: Vec::new(),
+                    enums: Vec::new(),
+                    derived_type_names: previous_pass_derived_type_names,
+                };
+                visitors.push((visitor, syntaxt_file));
             }
         }
     }
