@@ -7,7 +7,7 @@ keywords = ["kubernetes", "gateway-api","gateway-api-inference-extension"]
 homepage = "https://docs.rs/crate/gateway-api/"
 readme = "../README.md"
 repository = "https://github.com/kubvernor/gateway-api-rs"
-version = "0.150.0+130"
+version = "0.150.130"
 
 authors.workspace = true
 edition.workspace = true
