@@ -506,7 +506,7 @@ dependencies = [
 
 [[package]]
 name = "gateway-api-with-extensions"
-version = "0.150.0+130"
+version = "0.150.130"
 dependencies = [
  "anyhow",
  "cfg-if",

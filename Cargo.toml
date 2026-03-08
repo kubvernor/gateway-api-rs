@@ -4,7 +4,7 @@ members = ["gateway-api", "gateway-api-with-extensions", "gateway-api-inference-
 resolver = "2"
 
 [workspace.package]
-authors = ["kube-rs and kubvernor project (https://kube.rs)"]
+authors = ["kube-rs (https://kube.rs)"]
 edition = "2024"
 license = "MIT"
 version = "0.22.0+gw150-ie140"
